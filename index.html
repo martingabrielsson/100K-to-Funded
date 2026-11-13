@@ -370,15 +370,6 @@ function daysLeft(list){
   if(dates.indexOf(today)<0) end.setDate(end.getDate()-1);
   return Math.max(0,DAYS-weekdays(localDate(dates[0]),end));
 }
-// trailing max loss: sits 4k under the highest closed day, locks at breakeven
-function threshold(list){
-  var run=0, peak=0;
-  list.slice().sort(function(a,b){return a.date<b.date?-1:1;}).forEach(function(e){
-    run+=e.amount; if(run>peak) peak=run;
-  });
-  return Math.min(peak,-BOT)+BOT;
-}
-
 // scale of a gauge: one account, or n accounts combined (net page, no week columns)
 function scaleFor(n,weeks){ return {top:TOP*n,bot:BOT*n,step:500*n,major:2000*n,weeks:weeks}; }
 function pct(s,v){ return (s.top-v)/(s.top-s.bot)*100; }
@@ -419,7 +410,7 @@ function renderGauge(page,t,thr,w,headText,dl){
   var buffer=t-thr;
   q(".maxline").style.top=pct(s,thr)+"%";
   var ml=q(".maxLoss");
-  ml.textContent=money(thr-t)+(thr===0?" · locked":"");
+  ml.textContent=buffer<=0?"Lost":money(thr-t);
   ml.className="v maxLoss "+(buffer<=0?"red":"gold");
 
   q(".fill.pos").style.height=(t>0?Math.min(t,s.top)/(s.top-s.bot)*100:0)+"%";
@@ -476,7 +467,7 @@ function renderAll(){
   var netT=0, netThr=0;
   Array.prototype.forEach.call(pager.querySelectorAll(".gpage:not(.net)"),function(p){
     var a=p.getAttribute("data-acct"), list=a===null?[]:sessionsOf(a);
-    var t=total(list), thr=threshold(list), w=currentWeek(list);
+    var t=total(list), thr=BOT, w=currentWeek(list);   // static drawdown: the account is lost at BOT, profits never move it
     netT+=t; netThr+=thr;
     renderGauge(p,t,thr,w,"W"+Math.min(w,MAXW)+" · "+list.length+(list.length===1?" session":" sessions"),daysLeft(list));
   });
