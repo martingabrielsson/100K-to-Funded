@@ -403,7 +403,9 @@ function buildScales(page,s){
 // t = profit, thr = max-loss level, w = current week, dl = trading days left (w, dl null on the net page)
 function renderGauge(page,t,thr,w,headText,dl){
   var q=function(s){return page.querySelector(s);}, s=page._s;
-  var remaining=s.top-t, pctLeft=Math.max(0,remaining)/s.top*100;
+  // "left" and "% left" count from the target down and stop at 100% while in a loss;
+  // per day still uses the full amount needed (remaining)
+  var remaining=s.top-t, shown=Math.min(s.top,Math.max(0,remaining)), pctLeft=shown/s.top*100;
 
   q(".sessions").textContent=headText;
 
@@ -425,9 +427,9 @@ function renderGauge(page,t,thr,w,headText,dl){
   big.className="fBig bigVal "+(t>0?"up":t<0?"down":"flat");
   q(".bigLabel").textContent = t<0 ? "Drawdown" : "Profit";
 
-  q(".left").textContent=money(Math.max(0,remaining));
+  q(".left").textContent=money(shown);
   var lp=q(".leftPct");
-  lp.textContent=(remaining<=0?"0":pctLeft.toFixed(remaining>=1000?0:1))+"%";
+  lp.textContent=(remaining<=0?"0":pctLeft.toFixed(shown>=1000?0:1))+"%";
   lp.className="v leftPct "+(remaining<=0?"green":"amber");
 
   // profit needed per remaining trading day to reach the target
