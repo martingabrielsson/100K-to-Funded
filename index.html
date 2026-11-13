@@ -294,8 +294,8 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.75
           </div>
         </div>
       </div>
-      <div class="scale scaleR scaleR1" data-title="R1 · 4W"></div>
-      <div class="scale scaleR scaleR2" data-title="R2 · 8W"></div>
+      <div class="scale scaleR scaleR1" data-title="R1 · 6W"></div>
+      <div class="scale scaleR scaleR2" data-title="R2 · 12W"></div>
     </div>
 
     <div class="footer">
@@ -303,10 +303,10 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.75
       <div class="fBig flat bigVal">$0</div>
       <div class="fRow">
         <div class="fCell">
-          <div class="k perDayK">Per day &middot; 20d left</div>
-          <div class="v perDay">$300</div>
-          <div class="k leftK">Left to 6k</div>
-          <div class="v left">$6,000</div>
+          <div class="k perDayK">Per day &middot; 60d left</div>
+          <div class="v perDay">$133</div>
+          <div class="k leftK">Left to 8k</div>
+          <div class="v left">$8,000</div>
         </div>
         <div class="fCell" style="text-align:center">
           <div class="k">% left</div>
@@ -314,7 +314,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.75
         </div>
         <div class="fCell" style="text-align:right">
           <div class="k">Max loss</div>
-          <div class="v gold maxLoss">-$3,000</div>
+          <div class="v gold maxLoss">-$4,000</div>
         </div>
       </div>
     </div>
@@ -327,7 +327,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.75
 <script>
 (function(){
 "use strict";
-var TOP=6000, BOT=-3000, DAYS=20, ROUTES=[{cls:"scaleR1",weeks:4},{cls:"scaleR2",weeks:8}], MAXW=8, KEY="combine100k:v1";
+var TOP=8000, BOT=-4000, DAYS=60, ROUTES=[{cls:"scaleR1",weeks:6},{cls:"scaleR2",weeks:12}], MAXW=12, KEY="combine100k:v1";
 var db={accounts:[],selected:null,sessions:[]}, sign=1, plan=null, mem=null;
 
 async function load(){
@@ -370,7 +370,7 @@ function daysLeft(list){
   if(dates.indexOf(today)<0) end.setDate(end.getDate()-1);
   return Math.max(0,DAYS-weekdays(localDate(dates[0]),end));
 }
-// trailing max loss: sits 3k under the highest closed day, locks at breakeven
+// trailing max loss: sits 4k under the highest closed day, locks at breakeven
 function threshold(list){
   var run=0, peak=0;
   list.slice().sort(function(a,b){return a.date<b.date?-1:1;}).forEach(function(e){
@@ -380,7 +380,7 @@ function threshold(list){
 }
 
 // scale of a gauge: one account, or n accounts combined (net page, no week columns)
-function scaleFor(n,weeks){ return {top:TOP*n,bot:BOT*n,step:500*n,major:1500*n,weeks:weeks}; }
+function scaleFor(n,weeks){ return {top:TOP*n,bot:BOT*n,step:500*n,major:2000*n,weeks:weeks}; }
 function pct(s,v){ return (s.top-v)/(s.top-s.bot)*100; }
 
 function buildScales(page,s){
